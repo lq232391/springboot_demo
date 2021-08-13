@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "http://mybatis.org/dtd/mybatis-3-mapper.dtd" "mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lq.springboot_demo.mapper.OrderMapper">
+
+    <resultMap id="OrderMap" type="com.lq.springboot_demo.entity.response.OrderResponse">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="address_id" property="addressId"/>
+        <result column="Order_num" property="OrderNum"/>
+        <result column="Order_status" property="OrderStatus"/>
+        <result column="price" property="price"/>
+        <result column="remark" property="remark"/>
+        <result column="user_id" property="userId"/>
+        <result column="phone" property="phone"/>
+        <result column="product_id" property="productId"/>
+        <result column="Order_id" property="OrderId"/>
+        <result column="standard_values" property="standardValues"/>
+        <result column="product_name" property="productName"/>
+        <!--      <collection property="productList"  javaType="java.util.List" ofType="ProductResponse">
+                  <id column="tpid" property="id"/>
+                  <result column="product_name" property="productName"/>
+                  <result column="price" property="price"/>
+                  <result column="standard_values" property="standardValues"/>
+              </collection>-->
+
+    </resultMap>
+    <resultMap id="productMap" type="com.lq.springboot_demo.entity.Product">
+        <result column="product_name" property="productName"/>
+        <result column="price" property="price"/>
+        <result column="standard_values" property="standardValues"/>
+    </resultMap>
+    <select id="queryByAId" resultMap="productMap">
+        select product_name,price,standard_values from t_product where Order_id=#{OrderId}
+    </select>
+    <insert id="addOrder" parameterType="com.lq.springboot_demo.entity.Order">
+        insert into t_Order(id,create_time,is_delete,address_id,Order_num,Order_status,price,remark,user_id,phone)
+        values
+        (#{id},#{createTime},#{isDelete},#{addressId},#{OrderNum},#{OrderStatus},#{price},#{remark},#{userId},#{phone})
+    </insert>
+    <select id="selectById" resultType="com.lq.springboot_demo.entity.Order" parameterType="java.lang.String">
+        select * from t_Order where id=#{id}
+    </select>
+    <update id="updateStatus" parameterType="java.lang.String">
+        update t_Order set
+        <if test="OrderStatus !=null">
+            Order_status=#{OrderStatus}
+        </if>
+        where id=#{id}
+    </update>
+
+    <select id="queryByUserId" resultMap="OrderMap" parameterType="java.lang.String">
+        SELECT
+        tr.*,
+        tp.standard_values,
+        tp.product_name,
+        trp.product_id
+        FROM
+        t_Order AS tr
+        LEFT JOIN t_Order_product AS trp ON tr.id = trp.Order_id
+        LEFT JOIN t_product AS tp ON tp.id = trp.product_id
+        LEFT JOIN t_user AS tu ON tu.id = tr.user_id
+        WHERE
+        tr.user_id =#{userId}
+        Order by tr.create_time
+    </select>
+</mapper>

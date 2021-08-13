@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "http://mybatis.org/dtd/mybatis-3-mapper.dtd" "mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.lq.springboot_demo.mapper.ProduceMapper">
+
+    <resultMap id="productMap" type="com.lq.springboot_demo.entity.Product">
+        <result column="id" property="id"/>
+        <result column="create_time" property="createTime"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="price" property="price"/>
+        <result column="count" property="count"/>
+        <result column="product_name" property="productName"/>
+        <result column="standard_values" property="standardValues"/>
+        <result column="user_id" property="userId"/>
+    </resultMap>
+    <select id="queryByUserId" resultMap="productMap" parameterType="java.lang.String">
+        select * from t_product where user_id=#{userId}
+    </select>
+    <select id="queryProductName" resultType="java.lang.String">
+        select product_name from t_product
+    </select>
+    <select id="queryById" resultMap="productMap" parameterType="java.lang.String">
+        select * from t_product where id=#{id}
+    </select>
+    <update id="updateProduct" parameterType="com.lq.springboot_demo.entity.Product">
+        update t_product set
+        <if test="price !=null">
+            price=#{price},
+        </if>
+        <if test="count !=null">
+            count=#{count},
+        </if>
+        <if test="productName !=null and productName !='' ">
+            product_name=#{productName},
+        </if>
+        <if test="standardValues !=null and standardValues!='' ">
+            standard_values=#{standardValues}
+        </if>
+        where id=#{id}
+    </update>
+    <update id="updateCount" parameterType="com.lq.springboot_demo.entity.Product">
+        update t_product set
+        <if test="count !=null">
+            count=#{count}
+        </if>
+
+        where id=#{id}
+    </update>
+
+</mapper>
